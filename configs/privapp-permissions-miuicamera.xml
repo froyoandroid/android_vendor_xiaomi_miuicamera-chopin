@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 Firenza
+    SPDX-License-Identifier: Apache-2.0
+
+    Privileged permissions of com.android.camera, from the stock chopin
+    V14.0.7 /product/etc/permissions/privapp-permissions-product.xml.
+    mediatek.permission.ACCESS_APU_SYS is kept as stock had it; it is not
+    defined by our framework, so it is a no-op.
+-->
+<permissions>
+    <privapp-permissions package="com.android.camera">
+        <permission name="android.permission.INTERACT_ACROSS_USERS" />
+        <permission name="android.permission.LOG_COMPAT_CHANGE" />
+        <permission name="android.permission.READ_COMPAT_CHANGE_CONFIG" />
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
+        <permission name="android.permission.SYSTEM_CAMERA" />
+        <permission name="android.permission.WRITE_MEDIA_STORAGE" />
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+        <permission name="mediatek.permission.ACCESS_APU_SYS" />
+    </privapp-permissions>
+</permissions>

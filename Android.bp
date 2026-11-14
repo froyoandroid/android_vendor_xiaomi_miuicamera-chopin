@@ -1,0 +1,196 @@
+//
+// SPDX-FileCopyrightText: 2026 Firenza
+// SPDX-License-Identifier: Apache-2.0
+//
+// MIUI Camera (com.android.camera 4.5.002940.0) from chopin xiaomi.eu
+// V14.0.7.0.TKPCNXM (Android 13), packaged for Evolution X cnb (Android 17).
+// See README.md for why every piece is here.
+//
+
+soong_namespace {
+}
+
+// The stock APK is platform-signed but its v2/v3 signature was stripped, so it
+// is re-signed with our platform key. That gives it the platform_app SELinux
+// domain (MTK vendor policy already grants platform_app the isphal/BGService
+// HIDL and mtk_hal_camera binder access it needs) and the hidden-API exemption
+// (ApplicationInfo.isAllowedToUseHiddenApis: isSignedWithPlatformKey()).
+//
+// It lives in /system_ext/priv-app so it is a *bundled* app: libnativeloader
+// gives bundled apps a shared namespace that searches /system/lib64 and
+// /system_ext/lib64, which is how the stock app loaded its JNI libs from
+// /system/lib64. A /product app is unbundled on A15+ (product is always
+// treblelized) and, with targetSdk 31 and no <uses-native-library>, every
+// public.libraries-*.txt entry is filtered out for it.
+android_app_import {
+    name: "MiuiCamera",
+    owner: "xiaomi",
+    apk: "proprietary/system_ext/priv-app/MiuiCamera/MiuiCamera.apk",
+    certificate: "platform",
+    privileged: true,
+    system_ext_specific: true,
+    overrides: ["Aperture"],
+    // The manifest declares these as <uses-library required="false"> (native
+    // .so names, a MIUI quirk). None is a java library in our tree; listing them
+    // keeps the build-time uses-library check and the runtime CLC consistent.
+    optional_uses_libs: [
+        "libSNPE.so",
+        "libOpenCL.so",
+        "libcdsprpc.so",
+        "libmialgo_ai_vision.so",
+        "libxmi_slow_motion_mein.so",
+        "libmialgo_utils.so",
+        "libmiocr.so",
+        "libcamera_ispinterface_jni.xiaomi.so",
+        "libcamera_algoup_jni.xiaomi.so",
+        "libcamera_imagecodec_jni.xiaomi.so",
+        "libcamera_jpegutil_jni.xiaomi.so",
+        "libneuron_adapter_mgvi.so",
+        "libneuron_adapter.so",
+        "libneuronusdk_adapter.mtk.so",
+    ],
+    required: [
+        "libcamera_algoup_jni.xiaomi",
+        "libcamera_ispinterface_jni.xiaomi",
+        "libcamera_mianode_jni.xiaomi",
+        "privapp-permissions-miuicamera.xml",
+    ],
+}
+
+prebuilt_etc {
+    name: "privapp-permissions-miuicamera.xml",
+    src: "configs/privapp-permissions-miuicamera.xml",
+    sub_dir: "permissions",
+    system_ext_specific: true,
+}
+
+// JNI libs, pre-patched by patch-blobs.py (Surface::connect vtable slot).
+cc_prebuilt_library_shared {
+    name: "libcamera_algoup_jni.xiaomi",
+    owner: "xiaomi",
+    srcs: ["proprietary/system_ext/lib64/libcamera_algoup_jni.xiaomi.so"],
+    shared_libs: [
+        "libbinder",
+        "libcamera_client",
+        "libcamera_metadata",
+        "libcutils",
+        "libgui",
+        "liblog",
+        "libutils",
+        "libvndksupport",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    system_ext_specific: true,
+}
+
+cc_prebuilt_library_shared {
+    name: "libcamera_mianode_jni.xiaomi",
+    owner: "xiaomi",
+    srcs: ["proprietary/system_ext/lib64/libcamera_mianode_jni.xiaomi.so"],
+    shared_libs: [
+        "libvndksupport",
+        "libcamera_client",
+        "libcamera_metadata",
+        "libgui",
+        "libbinder",
+        "libutils",
+        "libcutils",
+        "liblog",
+        "libxml2",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    system_ext_specific: true,
+}
+
+cc_prebuilt_library_shared {
+    name: "libcamera_ispinterface_jni.xiaomi",
+    owner: "xiaomi",
+    srcs: ["proprietary/system_ext/lib64/libcamera_ispinterface_jni.xiaomi.so"],
+    shared_libs: [
+        "libandroid_runtime",
+        "libbinder",
+        "libcamera_client",
+        "libcamera_metadata",
+        "libcutils",
+        "libgui",
+        "libhidlbase",
+        "libhidltransport",
+        "liblog",
+        "libmedia",
+        "libnativehelper",
+        "libui",
+        "libutils",
+        "libvndksupport",
+        "vendor.mediatek.hardware.camera.isphal@1.0-system",
+        "libmtkisp_metadata_sys",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    system_ext_specific: true,
+}
+
+// System-side copies the ispinterface JNI lib links against. No source exists
+// for either (no .hal for camera.isphal in our tree), so the stock A13 system
+// builds are used. The vendor isphal@1.0 stays the vendor/xiaomi/chopin one.
+cc_prebuilt_library_shared {
+    name: "vendor.mediatek.hardware.camera.isphal@1.0-system",
+    owner: "xiaomi",
+    stem: "vendor.mediatek.hardware.camera.isphal@1.0",
+    srcs: ["proprietary/system_ext/lib64/vendor.mediatek.hardware.camera.isphal@1.0.so"],
+    shared_libs: [
+        "android.hardware.graphics.common@1.0",
+        "android.hardware.graphics.common@1.1",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libcutils",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    system_ext_specific: true,
+}
+
+cc_prebuilt_library_shared {
+    name: "libmtkisp_metadata_sys",
+    owner: "xiaomi",
+    srcs: ["proprietary/system_ext/lib64/libmtkisp_metadata_sys.so"],
+    shared_libs: [
+        "liblog",
+        "libutils",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    system_ext_specific: true,
+}
