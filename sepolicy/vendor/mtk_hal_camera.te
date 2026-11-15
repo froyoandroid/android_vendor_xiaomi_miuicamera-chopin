@@ -1,0 +1,6 @@
+set_prop(mtk_hal_camera, vendor_camera_appcontrol_prop)
+
+# isphal IISPModule (raw -> yuv reprocess, night/macro) calls back into MIUI Camera
+binder_call(mtk_hal_camera, platform_app)
+binder_call(mtk_hal_camera, platform_app_36)
+allow mtk_hal_camera { platform_app platform_app_36 }:fd use;

@@ -1,0 +1,2 @@
+# Clone mode (FenShen MACE) dlopens it from the app namespace via public.libraries.txt
+/vendor/lib64/libneuron_adapter\.so                       u:object_r:same_process_hal_file:s0

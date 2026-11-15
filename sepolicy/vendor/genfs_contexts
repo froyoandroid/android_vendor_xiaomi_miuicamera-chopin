@@ -1,0 +1,2 @@
+# AinrCore (night) writes the camera APU cooler status
+genfscon proc /driver/cl_apu_status    u:object_r:proc_thermal:s0

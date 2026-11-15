@@ -7,7 +7,7 @@ Evolution X `cnb` (Android 17). Source: chopin xiaomi.eu V14.0.7.0.TKPCNXM
 
 | Path | What | Install |
 |---|---|---|
-| `proprietary/system_ext/priv-app/MiuiCamera/MiuiCamera.apk` | stock APK, re-signed with `platform`, overrides Aperture | `/system_ext/priv-app/MiuiCamera` |
+| `proprietary/system_ext/priv-app/MiuiCamera/MiuiCamera.apk` | stock APK with A17 smali fixes (`apkpatch/`), re-signed with `platform` at build, overrides Aperture | `/system_ext/priv-app/MiuiCamera` |
 | `proprietary/system_ext/lib64/libcamera_{algoup,mianode,ispinterface}_jni.xiaomi.so` | stock JNI libs, **pre-patched** by `patch-blobs.py` | `/system_ext/lib64` |
 | `proprietary/system_ext/lib64/libmtkisp_metadata_sys.so` | stock A13 `/system/lib64` copy (ispinterface dep) | `/system_ext/lib64` |
 | `proprietary/system_ext/lib64/vendor.mediatek.hardware.camera.isphal@1.0.so` | stock A13 `/system/lib64` HIDL client (ispinterface dep) | `/system_ext/lib64` |
@@ -50,3 +50,17 @@ Vendor side (in device/xiaomi/mt6893-common): `same_process_hal_file` labels for
 the in-app MIA engine (`libmialgoengine*`, plugins, deps), `/vendor/etc/public.libraries.txt`
 (libOpenCL), `ro.camera.atms_factor.enabled`. Cameraserver ATMs hook:
 `patches/frameworks/av/0002-*`.
+
+## APK smali fixes
+`apkpatch/patch-apk.sh <stock MiuiCamera.apk>` rebuilds the committed APK with
+`CHOPIN_FINAL=1 CHOPIN_ROM=1` (p.py is the source of truth): A17
+StreamConfigurationMap and TotalCaptureResult ctors, MtkBoostFramework /
+ProcessManager / HapticFeedbackUtil stubs. The module-only all-intra I-frame
+override is skipped: frameworks/av accepts fractional I-frame intervals.
+
+## Sepolicy
+`BoardConfigVendor.mk` (included by device/xiaomi/chopin) adds
+`sepolicy/vendor`: /dev/apusys for platform_app(_36), hal_mtk_bgs client,
+app_data_file execute (qigsaw splits), libneuron_adapter as
+same_process_hal_file, cl_apu_status as proc_thermal, and a dedicated prop type
+for vendor.debug.appcontrol.name.

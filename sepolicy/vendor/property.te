@@ -1,0 +1,2 @@
+# Camera HAL publishes the foreground camera scene on every request
+vendor_internal_prop(vendor_camera_appcontrol_prop)
