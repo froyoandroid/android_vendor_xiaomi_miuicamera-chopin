@@ -1,0 +1,4 @@
+# MIUI Camera runs in its own copy of platform_app (agate/Lunaris approach), so
+# the camera-only rules below never reach Settings, SystemUI and other
+# platform apps. Same data type and MLS level as platform_app(_36).
+user=_app seinfo=platform isPrivApp=true name=com.android.camera domain=miuicamera_app type=app_data_file levelFrom=user
