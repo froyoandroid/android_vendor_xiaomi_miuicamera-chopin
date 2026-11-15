@@ -29,7 +29,11 @@ android_app_import {
     certificate: "platform",
     privileged: true,
     system_ext_specific: true,
-    overrides: ["Aperture"],
+    // Aperture and its RRO (config_defaultQrCodeComponent -> Aperture QR activity)
+    overrides: [
+        "Aperture",
+        "ApertureFrameworksBaseOverlay",
+    ],
     // The manifest declares these as <uses-library required="false"> (native
     // .so names, a MIUI quirk). None is a java library in our tree; listing them
     // keeps the build-time uses-library check and the runtime CLC consistent.
