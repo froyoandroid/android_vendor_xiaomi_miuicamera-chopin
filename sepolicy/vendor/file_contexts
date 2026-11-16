@@ -1,11 +1,12 @@
 # Clone mode (FenShen MACE) dlopens it from the app namespace via public.libraries.txt
 /vendor/lib64/libneuron_adapter\.so                       u:object_r:same_process_hal_file:s0
 # ...and libneuron_adapter dlopens these at load time (GPUDevice/APU init).
+# libnir_neon_driver and libneuron_platform.vpu are symlinks into mt6893/,
+# so the real files are labelled; libneuron_runtime is already labelled by MTK.
 # As vendor_file the reads are denied and its static ctor null-derefs (clone FC).
 /vendor/lib64/libarmnn\.so                                u:object_r:same_process_hal_file:s0
 /vendor/lib64/libcmdl\.so                                 u:object_r:same_process_hal_file:s0
-/vendor/lib64/libnir_neon_driver\.so                      u:object_r:same_process_hal_file:s0
+/vendor/lib64/mt6893/libnir_neon_driver\.so               u:object_r:same_process_hal_file:s0
 /vendor/lib64/libapu_mdw\.so                              u:object_r:same_process_hal_file:s0
-/vendor/lib64/libneuron_platform\.vpu\.so                 u:object_r:same_process_hal_file:s0
-/vendor/lib64/libneuron_runtime\.so                       u:object_r:same_process_hal_file:s0
+/vendor/lib64/mt6893/libneuron_platform\.vpu\.so          u:object_r:same_process_hal_file:s0
 /vendor/lib64/libvpu5\.so                                 u:object_r:same_process_hal_file:s0
